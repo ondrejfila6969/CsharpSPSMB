@@ -2,5 +2,8 @@
 
 public class ComponentNotConnectedException : Exception
 {
-    
+    public ComponentNotConnectedException() : base()
+    {
+        throw new ComponentNotConnectedException();
+    }
 }

@@ -2,5 +2,8 @@
 
 public class InvalidConnectorException : Exception
 {
-    
+    public InvalidConnectorException() : base()
+    {
+        throw new InvalidConnectorException();
+    }
 }
