@@ -3,7 +3,7 @@
 public interface IComputer
 {
     IEntity Owner { get; init; }
-    IMotherBoard MotherBoard { get; init; }
+    IMotherBoard MotherBoard { get; set; }
     ICPU Cpu { get; init; }
     IGPU Gpu { get; init; }
     IRAM Ram { get; init; }
