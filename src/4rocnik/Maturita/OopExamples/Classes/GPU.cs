@@ -3,66 +3,55 @@ using OopExamples.Interfaces.Exceptions;
 
 namespace OopExamples.Classes;
 
-public class GPU: IGPU
+public class GPU : IGPU
 {
-    private IComputer _computer;
-    public string Name { get; set; }
-    public GPUConnector[] Connectors { get; init; }
-    public IComputer? Computer { get; }
-    public GPUConnector[] AvailableConnectors { get; }
-    public IMonitor[] ConnectedMonitors { get; }
-    public bool IsUsed { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public GPUConnector[] Connectors { get; init; } = Array.Empty<GPUConnector>();
+    public IComputer? Computer { get; private set; }
+    public GPUConnector[] AvailableConnectors => _availableConnectors.ToArray();
+    public IMonitor[] ConnectedMonitors => _connectedMonitors.ToArray();
+    public bool IsUsed => Computer != null;
 
-    public GPU(string name, GPUConnector[] connectors, IComputer? computer, GPUConnector[] availableConnectors, IMonitor[] connectedMonitors)
+    private readonly List<GPUConnector> _availableConnectors = new();
+    private readonly List<IMonitor> _connectedMonitors = new();
+
+    public GPU(string name, GPUConnector[] connectors)
     {
         Name = name;
         Connectors = connectors;
-        Computer = computer;
-        AvailableConnectors = availableConnectors;
-        ConnectedMonitors = connectedMonitors;
-        IsUsed = false;
+        _availableConnectors.AddRange(connectors);
     }
-    
+
     public void Connect(IComputer computer)
     {
-        if (!string.IsNullOrEmpty(computer.Gpu.Name))
-        {
-            throw new ComponentAlreadyConnectedException("GPU already connected");
-        }
-        computer = null;
+        if (IsUsed) throw new ComponentAlreadyConnectedException();
+        Computer = computer;
     }
 
     public void Disconnect()
     {
-        if (string.IsNullOrEmpty(_computer.Gpu.Name))
-        {
-            throw new ComponentNotConnectedException("GPU not connected");
-        }
+        if (!IsUsed) throw new ComponentNotConnectedException();
+        Computer = null;
+        _connectedMonitors.Clear();
+        _availableConnectors.Clear();
+        _availableConnectors.AddRange(Connectors);
     }
 
     public void ConnectMonitor(IMonitor monitor)
     {
-        if (!string.IsNullOrEmpty(monitor.Name))
-        {
-            throw new ComponentAlreadyConnectedException("Monitor already connected");
-        }
+        if (_availableConnectors.Count == 0)
+            throw new InvalidConnectorException();
 
-        int index = 0;
-        foreach (GPUConnector availableConnector in _computer.Gpu.AvailableConnectors)
-        {
-            if (_computer.Gpu.Connectors[index] != availableConnector)
-            {
-                throw new InvalidConnectorException("Monitor cannot be connected");
-            }
-
-            index++;
-            _computer.Monitors.Append(monitor);
-        }
-
+        _connectedMonitors.Add(monitor);
+        _availableConnectors.RemoveAt(0);
     }
 
     public void DisconnectMonitor(IMonitor monitor)
     {
-        _computer.Monitors[0] = null;
+        if (!_connectedMonitors.Contains(monitor))
+            throw new ComponentNotConnectedException();
+
+        _connectedMonitors.Remove(monitor);
+        _availableConnectors.Add(Connectors[_connectedMonitors.Count]);
     }
 }

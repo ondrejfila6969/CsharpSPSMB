@@ -2,8 +2,8 @@
 
 public class InvalidConnectorException : Exception
 {
-    public InvalidConnectorException(string message) : base(message)
+    public InvalidConnectorException() : base()
     {
-        throw new InvalidConnectorException(message);
+        throw new InvalidConnectorException();
     }
 }

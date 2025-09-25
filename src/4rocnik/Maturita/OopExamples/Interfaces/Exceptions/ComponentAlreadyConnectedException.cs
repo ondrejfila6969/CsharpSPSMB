@@ -2,8 +2,8 @@
 
 public class ComponentAlreadyConnectedException : Exception
 {
-    public ComponentAlreadyConnectedException(string message) : base(message)
+    public ComponentAlreadyConnectedException(): base()
     {
-        throw new ComponentAlreadyConnectedException(message);
+        throw new ComponentAlreadyConnectedException();
     }
 }

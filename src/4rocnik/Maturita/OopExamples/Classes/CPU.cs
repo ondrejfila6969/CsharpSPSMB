@@ -2,7 +2,7 @@
 
 namespace OopExamples.Classes;
 
-public class CPU: ICPU
+public class CPU : ICPU
 {
     public string Name { get; set; }
 

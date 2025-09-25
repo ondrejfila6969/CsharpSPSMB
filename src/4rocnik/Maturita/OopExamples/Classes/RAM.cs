@@ -2,7 +2,7 @@
 
 namespace OopExamples.Classes;
 
-public class RAM: IRAM
+public class RAM : IRAM
 {
     public string Name { get; set; }
 

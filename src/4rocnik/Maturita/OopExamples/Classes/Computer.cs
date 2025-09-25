@@ -1,15 +1,13 @@
-﻿using OopExamples.Interfaces;
+﻿using System.Text.RegularExpressions;
+using OopExamples.Interfaces;
 using OopExamples.Interfaces.Exceptions;
 
 namespace OopExamples.Classes;
 
-public class Computer: IComputer
+public class Computer : IComputer
 {
-    public IComputerConfiguration Configuration { get; set; }
-    
-    public IComputerBuilder ComputerBuilder { get; set; }
-    public IEntity Owner { get; init; }
-    public IMotherBoard MotherBoard { get; set; }
+    public IEntity Owner { get; set; }
+    public IMotherBoard MotherBoard { get; init; }
     public ICPU Cpu { get; init; }
     public IGPU Gpu { get; init; }
     public IRAM Ram { get; init; }
@@ -17,72 +15,112 @@ public class Computer: IComputer
     public ICase Case { get; init; }
     public IMonitor[] Monitors { get; init; }
     public bool IsOn { get; set; }
-    public bool IsPersonalPC { get; }
-    public bool IsCompanyPC { get; }
+    public bool IsPersonalPC { get; set; }
+    public bool IsCompanyPC { get; set; }
 
-    public Computer(IComputerConfiguration configuration)
-    {
-        Configuration = configuration;
-    }
-
-    public Computer(IComputerBuilder builder)
-    {
-        ComputerBuilder = builder;
-    }
-    
-    public Computer(IEntity owner, IComputerConfiguration configuration, IMonitor[] monitors)
-    {
-        Owner = owner;
-        Configuration = configuration;
-        Monitors = monitors;
-    }
-    
-    public Computer(IEntity owner, IMotherBoard motherBoard, ICPU cpu, IGPU gpu, IRAM ram, IPowerSupply powerSupply, ICase @case, IMonitor[] monitors)
-    {
-        Owner = owner;
-        MotherBoard = motherBoard;
-        Cpu = cpu;
-        Gpu = gpu;
-        Ram = ram;
-        PowerSupply = powerSupply;
-        Case = @case;
-        Monitors = monitors;
-    }
-    
     public void PowerUp()
     {
-        if (!IsOn)
-        {
-            IsOn = true;
-        }
+        IsOn = true;
     }
 
     public void ShutDown()
     {
-        if (IsOn)
-        {
-            IsOn = false;
-        }
+        IsOn = false;
     }
 
     public void PressPowerButton()
     {
-        
+        if (IsOn)
+        {
+            ShutDown();
+            
+        }
+        else
+        {
+            PowerUp();
+        }
     }
 
     public void Print(string text)
     {
-        Console.WriteLine(text);
+        Console.WriteLine($"[COMPUTER]: {text}");
     }
+    
 
     public float Compute(string equation)
     {
-        throw new NotImplementedException();
+        equation.Replace(".", ",");
+            
+        string[] splitProblem = Regex.Split(equation, @"\s+");
+        double finished = 0;
+            
+        double firstNumber = Double.Parse(splitProblem[0].Replace(".", ","));
+        double secondNumber = Double.Parse(splitProblem[2].Replace(".", ","));
+            
+        switch (splitProblem[1])
+        {
+            case "+":
+                finished = firstNumber +  secondNumber; 
+                break;
+            case "-":
+                finished = firstNumber - secondNumber;
+                break;
+            case "*":
+                finished = firstNumber * secondNumber;
+                break;
+            case "/":
+                finished = firstNumber / secondNumber;
+                break;
+            case "**":
+                finished = Math.Pow(firstNumber, secondNumber);
+                break;
+            default: 
+                Console.WriteLine("Wrong user input!");
+                break;
+        }
+
+        return (float)finished;
+    }
+
+    public void ChangeOwner(IEntity? newOwner)
+    {
+        if (newOwner == null)
+        {
+            RemoveOwner();
+            return;
+        }
+
+        if (newOwner.GetType() == typeof(Person))
+        {
+            Owner = (Person)newOwner;
+            IsPersonalPC = true;
+            IsCompanyPC = false;
+        }
+        else if (newOwner.GetType() == typeof(Company))
+        {
+            Owner = (Company)newOwner;
+            IsPersonalPC = false;
+            IsCompanyPC = true;
+        }
+    }
+
+    public void RemoveOwner()
+    {
+        Owner = null;
+        IsCompanyPC = false;
+        IsPersonalPC  = false;
     }
 
     public IComputer BuildNewComputer(IComputerConfiguration configuration)
     {
-        Computer computer = new Computer(configuration);
-        return computer;
+        return new Computer
+        {
+            MotherBoard = configuration.MotherBoard,
+            Cpu = configuration.Cpu,
+            Gpu = configuration.Gpu,
+            Ram = configuration.Ram,
+            PowerSupply = configuration.PowerSupply,
+            Case = configuration.Case,
+        };
     }
 }

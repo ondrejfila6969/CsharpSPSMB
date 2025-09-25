@@ -2,7 +2,7 @@
 
 namespace OopExamples.Classes;
 
-public class Case: ICase
+public class Case : ICase
 {
     public string Name { get; set; }
 

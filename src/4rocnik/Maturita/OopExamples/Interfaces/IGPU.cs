@@ -2,7 +2,7 @@
 
 public interface IGPU : IComponent
 {
-    GPUConnector[] Connectors { get; init; }
+    GPUConnector[] Connectors { get; }
     IComputer? Computer { get; }
     GPUConnector[] AvailableConnectors { get; }
     IMonitor[] ConnectedMonitors { get; }
@@ -10,7 +10,7 @@ public interface IGPU : IComponent
     /// <summary>
     /// If GPU is used by the computer, if Computer is null, then GPU is not inserted in any PC
     /// </summary>
-    bool IsUsed { get; set; }
+    bool IsUsed { get;}
     
     /// <summary>
     /// If GPU is already connected to a computer, throw an ComponentAlreadyConnectedException

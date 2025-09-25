@@ -2,8 +2,8 @@
 
 public class ComponentNotConnectedException : Exception
 {
-    public ComponentNotConnectedException(string message) : base(message)
+    public ComponentNotConnectedException() : base()
     {
-        throw new ComponentNotConnectedException(message);
+        throw new ComponentNotConnectedException();
     }
 }

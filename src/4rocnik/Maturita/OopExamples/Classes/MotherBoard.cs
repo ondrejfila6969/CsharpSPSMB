@@ -2,7 +2,7 @@
 
 namespace OopExamples.Classes;
 
-public class MotherBoard: IMotherBoard
+public class MotherBoard : IMotherBoard
 {
     public string Name { get; set; }
 
